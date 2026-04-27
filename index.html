@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Frameworks de Seguridad — Análisis Comparativo</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,600;1,400&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #0a0c10;
+            --bg2: #10141c;
+            --bg3: #161b26;
+            --accent: #00e5b0;
+            --accent2: #ff4b6e;
+            --accent3: #ffd166;
+            --text: #e8edf5;
+            --text-muted: #7a8499;
+            --border: rgba(0, 229, 176, 0.15);
+            --card-bg: rgba(22, 27, 38, 0.85);
+            --glow: 0 0 30px rgba(0, 229, 176, 0.18);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Lora', serif;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* ── HERO ── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 4rem 2rem;
+            position: relative;
+            background:
+                radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0, 229, 176, 0.08) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 40% at 80% 80%, rgba(255, 75, 110, 0.06) 0%, transparent 60%),
+                var(--bg);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0, 229, 176, 0.04) 39px, rgba(0, 229, 176, 0.04) 40px), repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0, 229, 176, 0.04) 39px, rgba(0, 229, 176, 0.04) 40px);
+            pointer-events: none;
+        }
+
+        .badge {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.72rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 0.35em 1em;
+            border-radius: 2px;
+            margin-bottom: 1.8rem;
+            display: inline-block;
+            animation: fadeUp 0.6s ease both;
+        }
+
+        .hero h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2.4rem, 6vw, 5rem);
+            font-weight: 800;
+            line-height: 1.08;
+            letter-spacing: -0.02em;
+            max-width: 900px;
+            animation: fadeUp 0.7s 0.1s ease both;
+        }
+
+        .hero h1 span {
+            color: var(--accent);
+        }
+
+        .hero p {
+            margin-top: 1.4rem;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            animation: fadeUp 0.7s 0.2s ease both;
+        }
+
+        .hero-nav {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 2.4rem;
+            animation: fadeUp 0.7s 0.3s ease both;
+        }
+
+        .hero-nav a {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            text-decoration: none;
+            color: var(--text-muted);
+            border: 1px solid rgba(122, 132, 153, 0.3);
+            padding: 0.5em 1.2em;
+            border-radius: 2px;
+            transition: all 0.2s;
+        }
+
+        .hero-nav a:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+            box-shadow: var(--glow);
+        }
+
+        /* ── SECTION ── */
+        section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.6rem;
+        }
+
+        .section-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            line-height: 1.15;
+        }
+
+        .section-sub {
+            color: var(--text-muted);
+            font-size: 1rem;
+            max-width: 600px;
+            margin-bottom: 3rem;
+        }
+
+        /* ── FRAMEWORK CARDS ── */
+        .frameworks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .fw-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.25s, box-shadow 0.25s;
+        }
+
+        .fw-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--fw-color, var(--accent));
+        }
+
+        .fw-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .fw-number {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            color: var(--fw-color, var(--accent));
+            margin-bottom: 0.4rem;
+        }
+
+        .fw-name {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.45rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .fw-org {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .fw-desc {
+            font-size: 0.92rem;
+            color: var(--text-muted);
+            margin-bottom: 1.4rem;
+            line-height: 1.65;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .tag {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.65rem;
+            padding: 0.2em 0.7em;
+            border-radius: 2px;
+            background: rgba(0, 229, 176, 0.08);
+            color: var(--fw-color, var(--accent));
+            border: 1px solid rgba(0, 229, 176, 0.2);
+        }
+
+        .fw-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            border-top: 1px solid var(--border);
+            padding-top: 1rem;
+        }
+
+        .fw-meta-item label {
+            display: block;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.2rem;
+        }
+
+        .fw-meta-item span {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* ── PRO/CON LISTS ── */
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .pro,
+        .con {
+            font-size: 0.82rem;
+            padding: 0.35em 0.6em;
+            border-radius: 2px;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.4em;
+        }
+
+        .pro {
+            background: rgba(0, 229, 176, 0.07);
+            color: #6effd8;
+        }
+
+        .con {
+            background: rgba(255, 75, 110, 0.07);
+            color: #ff8fa0;
+        }
+
+        .pro::before {
+            content: '✓';
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .con::before {
+            content: '✗';
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* ── COMPARISON TABLE ── */
+        #tabla {
+            background: var(--bg2);
+            padding: 5rem 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        #tabla>* {
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-top: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        thead tr {
+            background: rgba(0, 229, 176, 0.06);
+            border-bottom: 2px solid var(--accent);
+        }
+
+        thead th {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            padding: 1rem 1.2rem;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        thead th:first-child {
+            color: var(--text);
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background 0.15s;
+        }
+
+        tbody tr:hover {
+            background: rgba(0, 229, 176, 0.03);
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        td {
+            padding: 0.9rem 1.2rem;
+            vertical-align: top;
+        }
+
+        td:first-child {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .price-free {
+            color: var(--accent);
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 600;
+        }
+
+        .price-paid {
+            color: var(--accent3);
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 600;
+        }
+
+        .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+
+        .level-low {
+            background: var(--accent);
+        }
+
+        .level-med {
+            background: var(--accent3);
+        }
+
+        .level-high {
+            background: var(--accent2);
+        }
+
+        /* ── REQUIREMENTS ── */
+        .reqs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .req-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1.6rem;
+        }
+
+        .req-card h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .req-card h3 .dot {
+            width: 10px;
+            height: 10px;
+            flex-shrink: 0;
+        }
+
+        .req-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+        }
+
+        .req-list li {
+            font-size: 0.83rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 0.5em;
+            align-items: flex-start;
+        }
+
+        .req-list li::before {
+            content: '→';
+            color: var(--accent);
+            flex-shrink: 0;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.08em;
+        }
+
+        /* ── ANIMATIONS ── */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(22px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.55s ease, transform 0.55s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: none;
+        }
+
+        /* ── SCROLLBAR ── */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 229, 176, 0.25);
+            border-radius: 3px;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 700px) {
+            .pros-cons {
+                grid-template-columns: 1fr;
+            }
+
+            .fw-meta {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ══════════════ HERO ══════════════ -->
+    <div class="hero">
+        <div class="badge">Seguridad Informática · Análisis Comparativo</div>
+        <h1>5 <span>Frameworks</span> de Seguridad Esenciales</h1>
+        <p>Una guía técnica completa que analiza, compara y evalúa los principales marcos de seguridad utilizados en la
+            industria.</p>
+        <nav class="hero-nav">
+            <a href="#frameworks">Frameworks</a>
+            <a href="#tabla">Tabla Comparativa</a>
+            <a href="#requerimientos">Requerimientos</a>
+        </nav>
+    </div>
+
+    <!-- ══════════════ FRAMEWORKS ══════════════ -->
+    <section id="frameworks">
+        <p class="section-label">01 — Análisis Individual</p>
+        <h2 class="section-title">Los 5 Frameworks</h2>
+        <p class="section-sub">Cada framework fue seleccionado por su relevancia, adopción y enfoque diferenciado en el
+            ecosistema de seguridad.</p>
+
+        <div class="frameworks-grid">
+
+            <!-- NIST CSF -->
+            <div class="fw-card reveal" style="--fw-color:#00e5b0">
+                <div class="fw-number">FRAMEWORK 01</div>
+                <div class="fw-name">NIST CSF</div>
+                <div class="fw-org">National Institute of Standards and Technology</div>
+                <div class="tags">
+                    <span class="tag">Gestión de Riesgos</span>
+                    <span class="tag">Gobierno</span>
+                    <span class="tag">Compliance</span>
+                </div>
+                <p class="fw-desc">Framework voluntario para mejorar la gestión de riesgos de ciberseguridad en
+                    infraestructura crítica. Organizado en cinco funciones clave: Identificar, Proteger, Detectar,
+                    Responder y Recuperar. La versión 2.0 (2024) añade una sexta función: Gobernar.</p>
+                <div class="pros-cons">
+                    <div class="pro">Ampliamente adoptado globalmente</div>
+                    <div class="con">No es prescriptivo, requiere adaptación</div>
+                    <div class="pro">Flexible para cualquier industria</div>
+                    <div class="con">Curva de aprendizaje elevada</div>
+                    <div class="pro">Gratuito y de libre acceso</div>
+                    <div class="con">Sin métricas de cumplimiento claras</div>
+                    <div class="pro">Integrable con ISO 27001</div>
+                    <div class="con">Puede requerir consultores externos</div>
+                </div>
+                <div class="fw-meta">
+                    <div class="fw-meta-item"><label>Costo</label><span class="price-free">Gratuito</span></div>
+                    <div class="fw-meta-item"><label>Versión actual</label><span>CSF 2.0 (2024)</span></div>
+                    <div class="fw-meta-item"><label>Sector objetivo</label><span>Todos los sectores</span></div>
+                    <div class="fw-meta-item"><label>Complejidad</label><span><span
+                                class="dot level-med"></span>Media</span></div>
+                </div>
+            </div>
+
+            <!-- ISO 27001 -->
+            <div class="fw-card reveal" style="--fw-color:#ff4b6e">
+                <div class="fw-number">FRAMEWORK 02</div>
+                <div class="fw-name">ISO/IEC 27001</div>
+                <div class="fw-org">International Organization for Standardization</div>
+                <div class="tags">
+                    <span class="tag">SGSI</span>
+                    <span class="tag">Certificación</span>
+                    <span class="tag">Internacional</span>
+                </div>
+                <p class="fw-desc">Estándar internacional para la gestión de la seguridad de la información (SGSI).
+                    Define requisitos para establecer, implementar, mantener y mejorar continuamente la seguridad de la
+                    información. Permite certificación oficial por organismos acreditados.</p>
+                <div class="pros-cons">
+                    <div class="pro">Certificación reconocida mundialmente</div>
+                    <div class="con">Proceso de certificación costoso</div>
+                    <div class="pro">Marco estructurado y completo</div>
+                    <div class="con">Tiempo de implementación largo (1-2 años)</div>
+                    <div class="pro">Aumenta confianza de clientes</div>
+                    <div class="con">Requiere auditorías periódicas</div>
+                    <div class="pro">114 controles de seguridad</div>
+                    <div class="con">Burocrático para PYMEs</div>
+                </div>
+                <div class="fw-meta">
+                    <div class="fw-meta-item"><label>Costo norma</label><span class="price-paid">~$200 USD</span></div>
+                    <div class="fw-meta-item"><label>Certificación</label><span class="price-paid">$15K–$50K+</span>
+                    </div>
+                    <div class="fw-meta-item"><label>Sector objetivo</label><span>Empresarial global</span></div>
+                    <div class="fw-meta-item"><label>Complejidad</label><span><span
+                                class="dot level-high"></span>Alta</span></div>
+                </div>
+            </div>
+
+            <!-- CIS Controls -->
+            <div class="fw-card reveal" style="--fw-color:#ffd166">
+                <div class="fw-number">FRAMEWORK 03</div>
+                <div class="fw-name">CIS Controls</div>
+                <div class="fw-org">Center for Internet Security</div>
+                <div class="tags">
+                    <span class="tag">Controles Técnicos</span>
+                    <span class="tag">Priorizado</span>
+                    <span class="tag">Defensa Activa</span>
+                </div>
+                <p class="fw-desc">Conjunto de 18 controles de seguridad priorizados y específicamente diseñados para
+                    contrarrestar las amenazas más comunes. Divididos en 3 grupos de implementación (IG1, IG2, IG3)
+                    según el tamaño y madurez de la organización. Muy orientado a la práctica técnica.</p>
+                <div class="pros-cons">
+                    <div class="pro">Controles técnicos concretos</div>
+                    <div class="con">Menos enfocado en governance</div>
+                    <div class="pro">Escalable por grupos de implementación</div>
+                    <div class="con">Actualización frecuente puede causar fatiga</div>
+                    <div class="pro">Mapeable a NIST y ISO</div>
+                    <div class="con">Enfocado en TI tradicional</div>
+                    <div class="pro">Basado en amenazas reales</div>
+                    <div class="con">Limitado para entornos OT/IoT</div>
+                </div>
+                <div class="fw-meta">
+                    <div class="fw-meta-item"><label>Costo</label><span class="price-free">Gratuito</span></div>
+                    <div class="fw-meta-item"><label>Versión actual</label><span>v8.1 (2024)</span></div>
+                    <div class="fw-meta-item"><label>Sector objetivo</label><span>TI empresarial</span></div>
+                    <div class="fw-meta-item"><label>Complejidad</label><span><span
+                                class="dot level-med"></span>Media</span></div>
+                </div>
+            </div>
+
+            <!-- OWASP -->
+            <div class="fw-card reveal" style="--fw-color:#a78bfa">
+                <div class="fw-number">FRAMEWORK 04</div>
+                <div class="fw-name">OWASP Top 10</div>
+                <div class="fw-org">Open Web Application Security Project</div>
+                <div class="tags">
+                    <span class="tag">Aplicaciones Web</span>
+                    <span class="tag">Desarrollo Seguro</span>
+                    <span class="tag">DevSecOps</span>
+                </div>
+                <p class="fw-desc">Lista de las 10 vulnerabilidades más críticas en aplicaciones web. Referencia
+                    estándar para desarrolladores y equipos de AppSec. También incluye OWASP ASVS (Application Security
+                    Verification Standard), OWASP SAMM y múltiples guías técnicas específicas.</p>
+                <div class="pros-cons">
+                    <div class="pro">Referencia esencial para devs</div>
+                    <div class="con">Solo cubre aplicaciones web</div>
+                    <div class="pro">Comunidad muy activa y abierta</div>
+                    <div class="con">No es un framework completo de gestión</div>
+                    <div class="pro">Gratuito y open source</div>
+                    <div class="con">Actualización cada 3-4 años</div>
+                    <div class="pro">Amplia documentación y herramientas</div>
+                    <div class="con">Orientado a desarrolladores, no a gestión</div>
+                </div>
+                <div class="fw-meta">
+                    <div class="fw-meta-item"><label>Costo</label><span class="price-free">Gratuito</span></div>
+                    <div class="fw-meta-item"><label>Versión actual</label><span>OWASP Top 10 2021</span></div>
+                    <div class="fw-meta-item"><label>Sector objetivo</label><span>Desarrollo de software</span></div>
+                    <div class="fw-meta-item"><label>Complejidad</label><span><span
+                                class="dot level-low"></span>Baja-Media</span></div>
+                </div>
+            </div>
+
+            <!-- MITRE ATT&CK -->
+            <div class="fw-card reveal" style="--fw-color:#38bdf8">
+                <div class="fw-number">FRAMEWORK 05</div>
+                <div class="fw-name">MITRE ATT&CK</div>
+                <div class="fw-org">MITRE Corporation</div>
+                <div class="tags">
+                    <span class="tag">Threat Intelligence</span>
+                    <span class="tag">TTPs</span>
+                    <span class="tag">Red Team / Blue Team</span>
+                </div>
+                <p class="fw-desc">Base de conocimiento de tácticas, técnicas y procedimientos (TTPs) adversariales
+                    basada en observaciones del mundo real. Fundamental para threat hunting, purple team exercises y
+                    mejora de detección. Cubre Enterprise, Mobile e ICS/OT.</p>
+                <div class="pros-cons">
+                    <div class="pro">Lenguaje común entre Red/Blue Team</div>
+                    <div class="con">Muy técnico, curva de aprendizaje alta</div>
+                    <div class="pro">Actualizado constantemente</div>
+                    <div class="con">No es un marco de gestión</div>
+                    <div class="pro">Cubre más de 400 técnicas documentadas</div>
+                    <div class="con">Abrumador sin un plan de priorización</div>
+                    <div class="pro">Gratuito y open source</div>
+                    <div class="con">Requiere madurez operativa previa</div>
+                </div>
+                <div class="fw-meta">
+                    <div class="fw-meta-item"><label>Costo</label><span class="price-free">Gratuito</span></div>
+                    <div class="fw-meta-item"><label>Versión actual</label><span>v15 (2024)</span></div>
+                    <div class="fw-meta-item"><label>Sector objetivo</label><span>SOC / Red Team</span></div>
+                    <div class="fw-meta-item"><label>Complejidad</label><span><span
+                                class="dot level-high"></span>Alta</span></div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ══════════════ TABLA COMPARATIVA ══════════════ -->
+    <div id="tabla">
+        <div>
+            <p class="section-label">02 — Tabla Comparativa</p>
+            <h2 class="section-title">Comparativa Detallada</h2>
+            <p class="section-sub">Análisis lado a lado de los 5 frameworks en las dimensiones más relevantes para la
+                toma de decisiones.</p>
+        </div>
+        <div style="max-width:1200px;margin:0 auto;padding:0 2rem;">
+            <div class="table-wrapper reveal">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Framework</th>
+                            <th>Costo</th>
+                            <th>Certificación</th>
+                            <th>Enfoque Principal</th>
+                            <th>Sector Ideal</th>
+                            <th>Complejidad</th>
+                            <th>Tiempo Impl.</th>
+                            <th>Integración</th>
+                            <th>Característica Especial</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="color:#00e5b0">NIST CSF</td>
+                            <td><span class="price-free">Gratuito</span></td>
+                            <td>No oficial</td>
+                            <td>Gestión integral de riesgos</td>
+                            <td>Infraestructura crítica, gobierno</td>
+                            <td><span class="dot level-med"></span>Media</td>
+                            <td>3–12 meses</td>
+                            <td>ISO, CIS, COBIT</td>
+                            <td>5 funciones (+ Gobernar en v2.0)</td>
+                        </tr>
+                        <tr>
+                            <td style="color:#ff4b6e">ISO 27001</td>
+                            <td><span class="price-paid">$15K–$50K+</span></td>
+                            <td>✅ Acreditada</td>
+                            <td>SGSI completo</td>
+                            <td>Empresas que requieren certificación</td>
+                            <td><span class="dot level-high"></span>Alta</td>
+                            <td>1–2 años</td>
+                            <td>ISO 27002, NIST, SOC2</td>
+                            <td>Única con certificación internacional reconocida</td>
+                        </tr>
+                        <tr>
+                            <td style="color:#ffd166">CIS Controls</td>
+                            <td><span class="price-free">Gratuito</span></td>
+                            <td>CIS Benchmarks</td>
+                            <td>Controles técnicos priorizados</td>
+                            <td>PYMEs y grandes empresas TI</td>
+                            <td><span class="dot level-med"></span>Media</td>
+                            <td>2–8 meses</td>
+                            <td>NIST, CMMC, PCI-DSS</td>
+                            <td>3 grupos de implementación escalables</td>
+                        </tr>
+                        <tr>
+                            <td style="color:#a78bfa">OWASP Top 10</td>
+                            <td><span class="price-free">Gratuito</span></td>
+                            <td>No oficial</td>
+                            <td>Seguridad en aplicaciones web</td>
+                            <td>Equipos de desarrollo y AppSec</td>
+                            <td><span class="dot level-low"></span>Baja</td>
+                            <td>Continuo (SDLC)</td>
+                            <td>PCI-DSS, ASVS, SAMM</td>
+                            <td>Integración en CI/CD y DevSecOps</td>
+                        </tr>
+                        <tr>
+                            <td style="color:#38bdf8">MITRE ATT&CK</td>
+                            <td><span class="price-free">Gratuito</span></td>
+                            <td>No oficial</td>
+                            <td>Inteligencia de amenazas / TTPs</td>
+                            <td>SOC, Red Team, Threat Hunters</td>
+                            <td><span class="dot level-high"></span>Alta</td>
+                            <td>Continuo (iterativo)</td>
+                            <td>SIEM, EDR, SOAR, Sigma</td>
+                            <td>+400 técnicas adversariales documentadas</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════ REQUERIMIENTOS ══════════════ -->
+    <section id="requerimientos">
+        <p class="section-label">03 — Implementación</p>
+        <h2 class="section-title">Requerimientos de Instalación</h2>
+        <p class="section-sub">Los recursos humanos, técnicos y organizacionales necesarios para implementar cada
+            framework.</p>
+
+        <div class="reqs-grid">
+
+            <div class="req-card reveal">
+                <h3><span class="dot" style="background:#00e5b0"></span>NIST CSF</h3>
+                <ul class="req-list">
+                    <li>Equipo de gestión de riesgos (CISO, Risk Manager)</li>
+                    <li>Inventario de activos de información documentado</li>
+                    <li>Herramientas de evaluación de riesgos (Archer, ServiceNow GRC)</li>
+                    <li>Política de ciberseguridad organizacional existente</li>
+                    <li>Soporte de alta dirección (Buy-in ejecutivo)</li>
+                    <li>Acceso al documento oficial: nvlpubs.nist.gov</li>
+                    <li>Mapeo de procesos de negocio críticos</li>
+                    <li>Presupuesto para evaluaciones periódicas</li>
+                </ul>
+            </div>
+
+            <div class="req-card reveal">
+                <h3><span class="dot" style="background:#ff4b6e"></span>ISO/IEC 27001</h3>
+                <ul class="req-list">
+                    <li>Consultor certificado ISO 27001 (Lead Implementer)</li>
+                    <li>Auditor interno calificado (Lead Auditor)</li>
+                    <li>Organismo de certificación acreditado (Bureau Veritas, BSI, TÜV)</li>
+                    <li>Sistema de gestión documental completo</li>
+                    <li>Declaración de Aplicabilidad (SoA) elaborada</li>
+                    <li>Plan de tratamiento de riesgos detallado</li>
+                    <li>Presupuesto: $15,000–$50,000 USD para certificación inicial</li>
+                    <li>Revisiones de dirección semestrales obligatorias</li>
+                </ul>
+            </div>
+
+            <div class="req-card reveal">
+                <h3><span class="dot" style="background:#ffd166"></span>CIS Controls</h3>
+                <ul class="req-list">
+                    <li>Descarga gratuita del documento en cisecurity.org</li>
+                    <li>Inventario de hardware y software actualizado</li>
+                    <li>Herramientas de escaneo de vulnerabilidades (Nessus, Qualys)</li>
+                    <li>Sistema de gestión de parches (WSUS, SCCM, Ansible)</li>
+                    <li>SIEM o sistema de logging centralizado</li>
+                    <li>Personal técnico de seguridad (al menos 1 FTE)</li>
+                    <li>Firewall y solución de endpoint protection</li>
+                    <li>Política de copias de respaldo activa</li>
+                </ul>
+            </div>
+
+            <div class="req-card reveal">
+                <h3><span class="dot" style="background:#a78bfa"></span>OWASP Top 10</h3>
+                <ul class="req-list">
+                    <li>Acceso gratuito en owasp.org (sin instalación)</li>
+                    <li>Herramientas SAST: SonarQube, Checkmarx, Semgrep</li>
+                    <li>Herramientas DAST: OWASP ZAP, Burp Suite</li>
+                    <li>Integración en pipeline CI/CD (Jenkins, GitHub Actions)</li>
+                    <li>Capacitación de desarrolladores en secure coding</li>
+                    <li>Proceso de revisión de código (code review)</li>
+                    <li>Entorno de pruebas/staging para escaneos</li>
+                    <li>Programa de gestión de vulnerabilidades en código</li>
+                </ul>
+            </div>
+
+            <div class="req-card reveal">
+                <h3><span class="dot" style="background:#38bdf8"></span>MITRE ATT&CK</h3>
+                <ul class="req-list">
+                    <li>Acceso gratuito en attack.mitre.org</li>
+                    <li>SIEM con capacidad de correlación avanzada (Splunk, Elastic)</li>
+                    <li>EDR/XDR integrado (CrowdStrike, SentinelOne, Defender)</li>
+                    <li>Analistas SOC con experiencia en threat hunting</li>
+                    <li>Herramientas de navegación: ATT&CK Navigator (gratuito)</li>
+                    <li>Threat Intelligence Platform (MISP, OpenCTI)</li>
+                    <li>Playbooks y runbooks de respuesta a incidentes</li>
+                    <li>Programa de red/purple team ejercicios periódicos</li>
+                </ul>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ══════════════ FOOTER ══════════════ -->
+    <footer>
+        <p>Seguridad Informática — Análisis de Frameworks &nbsp;·&nbsp; Elaborado con fines académicos &nbsp;·&nbsp;
+            2025</p>
+        <p style="margin-top:0.5rem; opacity:0.5">NIST · ISO/IEC · CIS · OWASP · MITRE — Todos los marcos son propiedad
+            de sus respectivas organizaciones.</p>
+    </footer>
+
+    <script>
+        // Intersection Observer for reveal animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.classList.add('visible');
+                    observer.unobserve(e.target);
+                }
+            });
+        }, { threshold: 0.08 });
+
+        document.querySelectorAll('.reveal').forEach((el, i) => {
+            el.style.transitionDelay = `${(i % 5) * 0.08}s`;
+            observer.observe(el);
+        });
+    </script>
+
+</body>
+
+</html>
